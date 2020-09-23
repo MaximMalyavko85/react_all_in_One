@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css'
+import classes from './App.module.scss'
 import Car from './Car/Car'
 
 class App extends React.Component {
@@ -62,12 +62,18 @@ class App extends React.Component {
     }
 
     return (
-      <div style={divStyle} className="container">
+      <div style={divStyle} className={classes['container']}>
         <h1>{this.state.pageTitle}</h1>
         <button onClick={this.toggleCarsHandler.bind(this)}>Toggle cars list</button>
-        {
-          cars
-        }
+        <div style={{
+          width: 400,
+          margin: 'auto',
+          paddingTop: "20px"
+        }}>
+          {
+            cars
+          }
+        </div>
       </div>
     )
   }
