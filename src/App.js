@@ -10,27 +10,63 @@ class App extends React.Component {
       { name: "Shkoda", year: "2010" },
       { name: "Mazda", year: "2017" }
     ],
-    pageTitle: "React Car shop "
+    pageTitle: "React Car shop",
+    showCars: true
   }
 
   //changeTitleHandler: function () {}
   //changeTitleHandler(){}
-  changeTitleHandler = () => {
-    this.setState({pageTitle: `${this.state.pageTitle} changed`})
+  toggleCarsHandler = () => {
+    this.setState({ showCars: !this.state.showCars })
+  }
+
+  changeTitleHandler = (title) => {
+    this.setState({ pageTitle: title })
+  }
+
+  onChangeName = (name, index) => {
+    const car = this.state.cars[index]
+    car.name = name
+    //const cars = this.state.cars.concat() //clone array
+    const cars = [...this.state.cars] //clone array
+
+    cars[index] = car
+
+    this.setState({ cars })
+  }
+
+  deleteHandler(index) {
+    const cars = this.state.cars.concat()
+
+    cars.splice(index, 1) // с какого индекса сколько элементов
+
+    this.setState({ cars })
   }
 
   render() {
     const divStyle = {
       textAlign: 'center'
     }
-    const cars = this.state.cars
+
+    let cars = null
+    if (this.state.showCars) {
+      cars = this.state.cars.map((i, index) =>
+        <Car
+          key={index}
+          name={i.name}
+          year={i.year}
+          onDelete={this.deleteHandler.bind(this, index)}
+          onChangeName={event => this.onChangeName(event.target.value, index)}
+        />
+      )
+    }
 
     return (
       <div style={divStyle} className="container">
         <h1>{this.state.pageTitle}</h1>
-        <button onClick={this.changeTitleHandler}>Change title</button>
+        <button onClick={this.toggleCarsHandler.bind(this)}>Toggle cars list</button>
         {
-          cars.map(i => <Car name={i.name} year={i.year} />)
+          cars
         }
       </div>
     )
