@@ -1,18 +1,28 @@
 import React from 'react';
 import classes from './App.module.scss'
 import Car from './Car/Car'
+import ErrorBoundary from './errorBoundary/errorBoundary'
+import Counter from './Counter/Counter'
+
+export const ClickedContext = React.createContext(false)
 
 class App extends React.Component {
 
-  state = {
-    cars: [
-      { name: "Ford", year: "2018" },
-      { name: "Shkoda", year: "2010" },
-      { name: "Mazda", year: "2017" }
-    ],
-    pageTitle: "React Car shop",
-    showCars: true
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      cars: [
+        { name: "Ford", year: 2018 },
+        { name: "Shkoda", year: 2010 },
+        { name: "Mazda", year: 2017 }
+      ],
+      clicked: false,
+      pageTitle: "React Car shop",
+      showCars: true
+    }
   }
+
 
   //changeTitleHandler: function () {}
   //changeTitleHandler(){}
@@ -51,20 +61,27 @@ class App extends React.Component {
     let cars = null
     if (this.state.showCars) {
       cars = this.state.cars.map((i, index) =>
-        <Car
-          key={index}
-          name={i.name}
-          year={i.year}
-          onDelete={this.deleteHandler.bind(this, index)}
-          onChangeName={event => this.onChangeName(event.target.value, index)}
-        />
+        <ErrorBoundary key={index}>
+          <Car
+            index={index}
+            name={i.name}
+            year={i.year}
+            onDelete={this.deleteHandler.bind(this, index)}
+            onChangeName={event => this.onChangeName(event.target.value, index)}
+          />
+        </ErrorBoundary>
       )
     }
 
     return (
       <div style={divStyle} className={classes['container']}>
-        <h1>{this.state.pageTitle}</h1>
+        <ClickedContext.Provider value={this.state.clicked}>
+          <Counter />
+        </ClickedContext.Provider>
+        <hr />
+        <h1 style={{ marginTop: 20 }}>{this.props.title}</h1>
         <button onClick={this.toggleCarsHandler.bind(this)}>Toggle cars list</button>
+        <button onClick={() => this.setState({ clicked: true })}>Change counter</button>
         <div style={{
           width: 400,
           margin: 'auto',
