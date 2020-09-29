@@ -1,96 +1,61 @@
 import React from 'react';
-import classes from './App.module.scss'
-import Car from './Car/Car'
-import ErrorBoundary from './errorBoundary/errorBoundary'
-import Counter from './Counter/Counter'
+import './App.scss'
+import { Route, NavLink, Switch, Redirect } from 'react-router-dom'
+import Cars from './Cars/Cars'
+import About from './About/About'
+import CarDetail from './CarDetail/CarDetail'
 
 export const ClickedContext = React.createContext(false)
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      cars: [
-        { name: "Ford", year: 2018 },
-        { name: "Shkoda", year: 2010 },
-        { name: "Mazda", year: 2017 }
-      ],
-      clicked: false,
-      pageTitle: "React Car shop",
-      showCars: true
-    }
-  }
-
-
-  //changeTitleHandler: function () {}
-  //changeTitleHandler(){}
-  toggleCarsHandler = () => {
-    this.setState({ showCars: !this.state.showCars })
-  }
-
-  changeTitleHandler = (title) => {
-    this.setState({ pageTitle: title })
-  }
-
-  onChangeName = (name, index) => {
-    const car = this.state.cars[index]
-    car.name = name
-    //const cars = this.state.cars.concat() //clone array
-    const cars = [...this.state.cars] //clone array
-
-    cars[index] = car
-
-    this.setState({ cars })
-  }
-
-  deleteHandler(index) {
-    const cars = this.state.cars.concat()
-
-    cars.splice(index, 1) // с какого индекса сколько элементов
-
-    this.setState({ cars })
+  state = {
+    isLoggetIn: false
   }
 
   render() {
-    const divStyle = {
-      textAlign: 'center'
-    }
-
-    let cars = null
-    if (this.state.showCars) {
-      cars = this.state.cars.map((i, index) =>
-        <ErrorBoundary key={index}>
-          <Car
-            index={index}
-            name={i.name}
-            year={i.year}
-            onDelete={this.deleteHandler.bind(this, index)}
-            onChangeName={event => this.onChangeName(event.target.value, index)}
-          />
-        </ErrorBoundary>
-      )
-    }
-
     return (
-      <div style={divStyle} className={classes['container']}>
-        <ClickedContext.Provider value={this.state.clicked}>
-          <Counter />
-        </ClickedContext.Provider>
-        <hr />
-        <h1 style={{ marginTop: 20 }}>{this.props.title}</h1>
-        <button onClick={this.toggleCarsHandler.bind(this)}>Toggle cars list</button>
-        <button onClick={() => this.setState({ clicked: true })}>Change counter</button>
-        <div style={{
-          width: 400,
-          margin: 'auto',
-          paddingTop: "20px"
-        }}>
-          {
-            cars
-          }
+      <div className={'container'}>
+        <nav className={'navigation'}>
+          <ul>
+            <li>
+              <NavLink
+                to="/"
+                exact
+                activeClassName={'link active'}
+              >Home</NavLink></li>
+            <li><NavLink to="/about"
+              activeClassName={'link active'}
+              activeStyle={{
+                color: 'green'
+              }}
+            >About</NavLink></li>
+            <li><NavLink
+              to={{
+                pathname: '/cars'
+              }}
+              activeClassName={'link active'}
+            >Cars</NavLink></li>
+          </ul>
+        </nav>
+
+        <div className="container" style={{ textAlign: 'center' }}>
+          <h3>is logget in {this.state.isLoggetIn ? 'TRUE' : 'FALSE'}</h3>
+          <button onClick={() => this.setState({
+            isLoggetIn: true
+          })}>LogIn</button>
         </div>
+        <hr />
+        <Switch>
+          <Route path='/' exact render={() => <h1>Base path</h1>} />
+          {
+            this.state.isLoggetIn && <Route path='/about' component={About} />
+          }
+          <Route path='/cars/:name' component={CarDetail} />
+          <Route path='/cars' component={Cars} />
+          <Redirect to={'/'} />
+          {/* <Route render={() => <h1 style={{ color: 'red', textAlign: 'center' }}>404 not found</h1>} /> */}
+        </Switch>
       </div>
     )
   }
